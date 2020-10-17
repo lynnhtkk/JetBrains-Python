@@ -1,7 +1,8 @@
-# Stage 3/6 of Numeric Matrix Processor
+# Stage 5/6 of Numeric Matrix Processor
 # Include choosing options for the type of operations
 # Include Matrix Multiplication by ANOTHER MATRIX
 # Added Transpose Option
+# Added Determinant Option
 
 class Matrix:
     result_mat = []
@@ -41,6 +42,14 @@ class Matrix:
         self.row, self.col = map(int, input(f'Enter size of {order} matrix: ').split())
         print(f'Enter {order} matrix:')
         self.mat = [input().split() for _ in range(self.row)]
+        
+        # Changing type of elements in matrix
+        for i in range(self.row):
+            for j in range(self.col):
+                try:
+                    self.mat[i][j] = int(self.mat[i][j])
+                except:
+                    self.mat[i][j] = float(self.mat[i][j])
 
     def sum_matrix(self):
         Matrix.result_mat = []
@@ -53,14 +62,14 @@ class Matrix:
             for i in range(self.row):
                 Matrix.result_mat.append([])
                 for j in range(self.col):
-                    Matrix.result_mat[i].append(float(self.mat[i][j]) + float(second.mat[i][j]))
+                    Matrix.result_mat[i].append(self.mat[i][j] + second.mat[i][j])
             
             self.format_matrix()
 
     def mult_matrix_constant(self):
         self.get_matrix('')
         num = float(input('Enter constant: '))
-        Matrix.result_mat = [[num * float(self.mat[i][j]) for j in range(int(self.col))] for i in range(int(self.row))]
+        Matrix.result_mat = [[num * self.mat[i][j] for j in range(self.col)] for i in range(self.row)]
         
         self.format_matrix()
 
@@ -77,7 +86,7 @@ class Matrix:
                 for j in range(second.col):
                     temp = 0
                     for k in range(self.col):
-                        temp += float(self.mat[i][k]) * float(second.mat[k][j])
+                        temp += self.mat[i][k] * second.mat[k][j]
                     Matrix.result_mat[i].append(temp)
         
         self.format_matrix()
@@ -125,9 +134,13 @@ class Matrix:
     def det_mat(self, mat, total=0):
         indices = list(range(len(mat)))
 
+        # Corner Case 1x1 Matrix
+        if len(mat) == 1 and len(mat[0]) == 1:
+            return mat[0][0]
+
         # Base Case
         if len(mat) == 2 and len(mat[0]) == 2:
-            val = int(mat[0][0]) * int(mat[1][1]) - int(mat[1][0]) * int(mat[0][1])
+            val = mat[0][0] * mat[1][1] - mat[1][0] * mat[0][1]
             return val
 
         for fc in indices:
@@ -141,7 +154,7 @@ class Matrix:
 
             # Recursive Case
             sub_det = self.det_mat(copy_mat)
-            total += ((-1) ** fc) * int(mat[0][fc]) * sub_det
+            total += ((-1) ** fc) * mat[0][fc] * sub_det
 
         return total
 
