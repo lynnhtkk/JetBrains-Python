@@ -8,6 +8,7 @@ class Matrix:
     def __init__(self):
         self.row = 0
         self.col = 0
+        self.det = 0
 
     def get_options(self):
         while True:
@@ -16,6 +17,7 @@ class Matrix:
 2. Multiply matrix by a constant
 3. Multiply matrices
 4. Transpose matrix
+5. Calculate a determinant
 0. Exit""")
             self.opt = input('Your choice: ')
             if self.opt == '0':
@@ -28,8 +30,13 @@ class Matrix:
                 self.mult_matrix()
             elif self.opt == '4':
                 self.transpose_matrix()
-            
+            elif self.opt == '5':
+                self.get_matrix('')
+                self.det = self.det_mat(self.mat)
+                print(f'The result is:\n{self.det}')
+                
 
+        
     def get_matrix(self, order):
         self.row, self.col = map(int, input(f'Enter size of {order} matrix: ').split())
         print(f'Enter {order} matrix:')
@@ -114,6 +121,29 @@ class Matrix:
             Matrix.result_mat = self.mat[::-1]
 
             self.format_matrix()
+
+    def det_mat(self, mat, total=0):
+        indices = list(range(len(mat)))
+
+        # Base Case
+        if len(mat) == 2 and len(mat[0]) == 2:
+            val = int(mat[0][0]) * int(mat[1][1]) - int(mat[1][0]) * int(mat[0][1])
+            return val
+
+        for fc in indices:
+            #  fc stands for focused column
+            copy_mat = mat.copy()
+            copy_mat = copy_mat[1:]  # removing first row
+            
+            #  removing focused column
+            for i in range(len(copy_mat)):
+                copy_mat[i] = copy_mat[i][0:fc] + copy_mat[i][fc + 1:]
+
+            # Recursive Case
+            sub_det = self.det_mat(copy_mat)
+            total += ((-1) ** fc) * int(mat[0][fc]) * sub_det
+
+        return total
 
     def format_matrix(self):
         print('The result is: ')
