@@ -1,8 +1,8 @@
-# Stage 5/6 of Numeric Matrix Processor
-# Include choosing options for the type of operations
-# Include Matrix Multiplication by ANOTHER MATRIX
-# Added Transpose Option
-# Added Determinant Option
+# Stage 6/6
+# Polished the program
+# Added the inverse of a matrix option
+
+import numpy as np
 
 class Matrix:
     result_mat = []
@@ -10,6 +10,7 @@ class Matrix:
         self.row = 0
         self.col = 0
         self.det = 0
+
 
     def get_options(self):
         while True:
@@ -19,6 +20,7 @@ class Matrix:
 3. Multiply matrices
 4. Transpose matrix
 5. Calculate a determinant
+6. Inverse Matrix
 0. Exit""")
             self.opt = input('Your choice: ')
             if self.opt == '0':
@@ -35,6 +37,8 @@ class Matrix:
                 self.get_matrix('')
                 self.det = self.det_mat(self.mat)
                 print(f'The result is:\n{self.det}')
+            elif self.opt == '6':
+                self.inverse_mat()
                 
 
         
@@ -51,6 +55,7 @@ class Matrix:
                 except:
                     self.mat[i][j] = float(self.mat[i][j])
 
+
     def sum_matrix(self):
         Matrix.result_mat = []
         self.get_matrix('first')
@@ -63,15 +68,23 @@ class Matrix:
                 Matrix.result_mat.append([])
                 for j in range(self.col):
                     Matrix.result_mat[i].append(self.mat[i][j] + second.mat[i][j])
-            
             self.format_matrix()
 
-    def mult_matrix_constant(self):
-        self.get_matrix('')
-        num = float(input('Enter constant: '))
-        Matrix.result_mat = [[num * self.mat[i][j] for j in range(self.col)] for i in range(self.row)]
-        
+
+    def mult_matrix_constant(self, num=None, mat=None):
+        # if num is None, the function is called seprately.
+        # if num is defined, the function is called for inverse_matrix() function
+        if not num and not mat:
+            self.get_matrix('')
+            mat = self.mat.copy()
+            num = input('Enter constant: ')
+            try:
+                num = int(num)
+            except:
+                num = float(num)
+        Matrix.result_mat = [[round(num * mat[i][j], 2) for j in range(self.col)] for i in range(self.row)]     
         self.format_matrix()
+
 
     def mult_matrix(self):
         Matrix.result_mat = []
@@ -90,6 +103,7 @@ class Matrix:
                     Matrix.result_mat[i].append(temp)
         
         self.format_matrix()
+
 
     def transpose_matrix(self):
         print("""
@@ -131,6 +145,7 @@ class Matrix:
 
             self.format_matrix()
 
+
     def det_mat(self, mat, total=0):
         indices = list(range(len(mat)))
 
@@ -158,7 +173,26 @@ class Matrix:
 
         return total
 
+
+    def inverse_mat(self):
+        self.get_matrix('')
+        mat = np.array(self.mat)
+        try:
+            inv_mat = np.linalg.inv(mat)
+            Matrix.result_mat = inv_mat.tolist()
+            # Round the elements within matrix
+            Matrix.result_mat = [[round(Matrix.result_mat[i][j], 3) for j in range(self.col)] for i in range(self.row)]
+            for i in range(self.row):
+                for j in range(self.col):
+                    if Matrix.result_mat[i][j] == 0:
+                        Matrix.result_mat[i][j] = 0
+            self.format_matrix()
+        except:
+            print('This matrix doesn\'t have an inverse.')
+
+
     def format_matrix(self):
+        # Printing the matrix formattly 
         print('The result is: ')
         for r in Matrix.result_mat:
             print(' '.join(map(str, r)))
