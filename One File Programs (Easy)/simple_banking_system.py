@@ -8,7 +8,7 @@ class BankingSystem:
     def __init__(self):
         self.iin = '400000'
         self.account_identifier = ''
-        self.checksum = str(random.randint(0, 9))
+        self.checksum = ''
         self.card_number = ''
         self.pin = ''
         self.balance = 0
@@ -28,11 +28,26 @@ class BankingSystem:
     def create_account(self):
         self.account_identifier = str(random.randrange(100000000, 999999999))
         self.pin = str(random.randrange(1000, 9999))
+        self.checksum = self.calculate_checksum(self.iin + self.account_identifier)
         self.card_number = self.iin + self.account_identifier + self.checksum
         print('\nYour card has been created')
         print('Your card number:\n{}'.format(self.card_number))
         print('Your card PIN:\n{}'.format(self.pin))
         BankingSystem.all_card_info[self.card_number] = self.pin
+
+    def calculate_checksum(self, card_number):
+        card_number_digits = [int(dgt) for dgt in card_number]
+        for i in range(len(card_number_digits)):
+            if i % 2 == 0:
+                card_number_digits[i] *= 2
+            if card_number_digits[i] > 9:
+                card_number_digits[i] -= 9
+        total = 0
+        for dgt in card_number_digits:
+            total += dgt
+        for x in range(11):
+            if (total + x) % 10 == 0:
+                return str(x)
 
     def log_in(self):
         print('\nEnter your card number:')
