@@ -1,17 +1,19 @@
 import random
 import sys
+import sqlite3
 
 
 class BankingSystem:
-    all_card_info = {}
 
     def __init__(self):
+        self.id = 1
         self.iin = '400000'
         self.account_identifier = ''
         self.checksum = ''
         self.card_number = ''
         self.pin = ''
         self.balance = 0
+
 
     def menu(self, n=1):
         while n:
@@ -33,7 +35,22 @@ class BankingSystem:
         print('\nYour card has been created')
         print('Your card number:\n{}'.format(self.card_number))
         print('Your card PIN:\n{}'.format(self.pin))
-        BankingSystem.all_card_info[self.card_number] = self.pin
+
+        # INSERT DATA INTO DATABASE card.s3db TABLE card
+        conn = sqlite3.connect('card.s3db')
+        c = conn.cursor()
+        # DETERMINE THE id
+        c.execute('SELECT MAX(id) FROM card')
+        if c.fetchone()[0] is None:
+            self.id = 1
+        else:
+            c.execute('SELECT MAX(id) FROM card')
+            self.id = c.fetchone()[0] + 1
+
+        t = (self.id, self.card_number, self.pin,)
+        c.execute('INSERT INTO card (id,number,pin) VALUES (?,?,?)', t)
+        conn.commit()
+        conn.close()
 
     def calculate_checksum(self, card_number):
         card_number_digits = [int(dgt) for dgt in card_number]
@@ -45,20 +62,27 @@ class BankingSystem:
         total = 0
         for dgt in card_number_digits:
             total += dgt
-        for x in range(11):
+        for x in range(10):
             if (total + x) % 10 == 0:
                 return str(x)
 
     def log_in(self):
+        conn = sqlite3.connect('card.s3db')
+        c = conn.cursor()
         print('\nEnter your card number:')
-        c_number = input()
+        c_number = (input(),)
         print('Enter your PIN:')
         c_pin = input()
-        if not c_number in BankingSystem.all_card_info.keys():
+        c.execute('SELECT pin FROM card WHERE number=?', c_number)
+        if c.fetchone() is None:
             print('\nWrong card number or PIN!\n')
         else:
-            if BankingSystem.all_card_info[c_number] == c_pin:
+            c.execute('SELECT pin FROM card WHERE number=?', c_number)
+            real_pin = c.fetchone()[0]
+            if real_pin == c_pin:
                 print('\nYou have successfully logged in!\n')
+                c.execute('SELECT balance FROM card WHERE number=?', c_number)
+                self.balance = c.fetchone()[0]
                 self.logged_in_menu()
             else:
                 print('\nWrong card number or PIN!\n')
@@ -79,5 +103,22 @@ class BankingSystem:
             sys.exit()
 
 
-testing = BankingSystem()
-testing.menu()
+con = sqlite3.connect('card.s3db')
+cur = con.cursor()
+try:
+    # CHECK IF TABLE ALREADY EXIST
+    # NO ERROR, ALREADY EXIST. ERROR, CREATE TABLE IN EXCEPT STATEMENT
+    cur.execute('SELECT * FROM card;')
+except sqlite3.OperationalError:
+    # CREATE TABLE card in card.s3db DATABASE
+    cur.execute('''
+CREATE TABLE card (
+id INTEGER PRIMARY KEY,
+number TEXT,
+pin TEXT,
+balance INTEGER DEFAULT 0);''')
+con.commit()
+con.close()
+
+simple_banking_system = BankingSystem()
+simple_banking_system.menu()
