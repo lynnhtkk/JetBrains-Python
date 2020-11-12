@@ -1,7 +1,4 @@
-import random
-import sys
-import sqlite3
-
+import random, sys, sqlite3
 
 class BankingSystem:
 
@@ -14,10 +11,22 @@ class BankingSystem:
         self.pin = ''
         self.balance = 0
 
+    def create_database(self):
+        conn = sqlite3.connect('card.s3db')
+        c = conn.cursor()
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS card (
+        id INTEGER PRIMARY KEY,
+        number TEXT,
+        pin TEXT,
+        balance INTEGER DEFAULT 0);''')
+        conn.commit()
+        conn.close()
 
     def menu(self, n=1):
         while n:
-            print('''1. Create an account
+            print('''
+1. Create an account
 2. Log into account
 0. Exit''')
             n = int(input())
@@ -89,7 +98,8 @@ class BankingSystem:
 
     def logged_in_menu(self, n=1):
         while n:
-            print('''1. Balance
+            print('''
+1. Balance
 2. Log out
 0. Exit''')
             n = int(input())
@@ -99,26 +109,9 @@ class BankingSystem:
                 print('\nYou have successfully logged out!\n')
                 break
         if not n:
-            print('\nBye!\n')
-            sys.exit()
+            sys.exit('\nBye!\n')
 
-
-con = sqlite3.connect('card.s3db')
-cur = con.cursor()
-try:
-    # CHECK IF TABLE ALREADY EXIST
-    # NO ERROR, ALREADY EXIST. ERROR, CREATE TABLE IN EXCEPT STATEMENT
-    cur.execute('SELECT * FROM card;')
-except sqlite3.OperationalError:
-    # CREATE TABLE card in card.s3db DATABASE
-    cur.execute('''
-CREATE TABLE card (
-id INTEGER PRIMARY KEY,
-number TEXT,
-pin TEXT,
-balance INTEGER DEFAULT 0);''')
-con.commit()
-con.close()
 
 simple_banking_system = BankingSystem()
+simple_banking_system.create_database()
 simple_banking_system.menu()
