@@ -3,3 +3,4 @@
 3.  Credit Calculator(Difficulty: Easy)
 4.  Numeric Matrix Processor(Difficulty: Medium)
 5.  Simple Banking System(Difficulty: Medium)
+6. Tic Tac Toe with AI(Difficulty: Hard)
