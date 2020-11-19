@@ -1,4 +1,5 @@
 import random
+import sys
 
 
 def display_board(board):
@@ -28,12 +29,11 @@ class TicTacToe:
             if self.board[row - 1][col - 1] != ' ':
                 continue
             else:
-                self.board[row - 1][col - 1] = 'O'
+                self.board[row - 1][col - 1] = self.player_symbol
                 display_board(self.board)
                 break
 
     def human_player_turn(self):
-        self.player_symbol = 'X'
         self.get_coordinates()
         display_board(self.board)
 
@@ -50,6 +50,14 @@ class TicTacToe:
                 self.board[int(cds[0]) - 1][int(cds[1]) - 1] = self.player_symbol
                 break
 
+    def reset_board(self):
+        self.cells = [' ' for _ in range(9)]
+        self.board = [
+            [self.cells[6], self.cells[3], self.cells[0]],
+            [self.cells[7], self.cells[4], self.cells[1]],
+            [self.cells[8], self.cells[5], self.cells[2]]
+        ]
+
     def check_win(self):
         flat_cells = []
         for col in range(2, -1, -1):
@@ -63,24 +71,53 @@ class TicTacToe:
         ]
         if 'XXX' in winning_stage:
             print('X wins')
+            self.reset_board()
             return True
         elif 'OOO' in winning_stage:
             print('O wins')
+            self.reset_board()
             return True
 
-    def game_play(self):
+    def game_play(self, **kwargs):
         display_board(self.board)
         for i in range(9):
             if i % 2 == 0:
-                self.human_player_turn()
+                self.player_symbol = 'X'
+                if kwargs['player_x'] == 'easy':
+                    self.ai_player_turn()
+                else:
+                    self.human_player_turn()
             else:
-                self.ai_player_turn()
-
+                self.player_symbol = 'O'
+                if kwargs['player_o'] == 'easy':
+                    self.ai_player_turn()
+                else:
+                    self.human_player_turn()
+            # CHECK WIN STAGE
             if self.check_win():
                 break
         else:
             print('Draw')
 
+    def choose_game_mode(self):
+        while True:
+            mode = input('Input command: ').split()
+            if mode[0] == 'exit':
+                sys.exit()
+            else:
+                if mode[0] == 'start':
+                    if len(mode) == 3:
+                        if (mode[1] == 'easy' or mode[1] == 'user') and (mode[2] == 'easy' or mode[2] == 'user'):
+                            self.game_play(player_x=mode[1], player_o=mode[2])
+                        else:
+                            print('Bad parameters!')
+                            continue
+                    else:
+                        print('Bad parameters!')
+                        continue
+                else:
+                    print('Bad parameters!')
+
 
 tic_tac_toe = TicTacToe()
-tic_tac_toe.game_play()
+tic_tac_toe.choose_game_mode()
