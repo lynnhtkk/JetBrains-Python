@@ -13,7 +13,7 @@ def check_coordinates(symbol):
             print('You should enter numbers!')
         elif int(coords[0]) < 1 or int(coords[0]) > 3 or int(coords[1]) < 1 or int(coords[1]) > 3:
             print('Coordinates should be from 1 to 3!')
-        elif board[int(coords[0]) - 1][int(coords[1]) - 1] == 'X' or board[int(coords[0]) - 1][int(coords[1]) - 1] == 'O':
+        elif board[int(coords[0]) - 1][int(coords[1]) - 1] != ' ':
             print('This cell is occupied! Choose another one!')
         else:
             board[int(coords[0]) - 1][int(coords[1]) - 1] = symbol
@@ -47,11 +47,9 @@ board = [
 ]
 
 display_board()
-turns = 0
 for i in range(9):
-    player = 'X' if turns % 2 == 0 else 'O'
+    player = 'X' if i % 2 == 0 else 'O'
     check_coordinates(player)
-    turns += 1
     display_board()
     if check_win():
         break

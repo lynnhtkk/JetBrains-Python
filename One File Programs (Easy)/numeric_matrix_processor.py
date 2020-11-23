@@ -1,8 +1,5 @@
-# Stage 6/6
-# Polished the program
-# Added the inverse of a matrix option
-
 import numpy as np
+
 
 class Matrix:
     result_mat = []
@@ -10,7 +7,6 @@ class Matrix:
         self.row = 0
         self.col = 0
         self.det = 0
-
 
     def get_options(self):
         while True:
@@ -39,9 +35,7 @@ class Matrix:
                 print(f'The result is:\n{self.det}')
             elif self.opt == '6':
                 self.inverse_mat()
-                
-
-        
+                       
     def get_matrix(self, order):
         self.row, self.col = map(int, input(f'Enter size of {order} matrix: ').split())
         print(f'Enter {order} matrix:')
@@ -54,7 +48,6 @@ class Matrix:
                     self.mat[i][j] = int(self.mat[i][j])
                 except:
                     self.mat[i][j] = float(self.mat[i][j])
-
 
     def sum_matrix(self):
         Matrix.result_mat = []
@@ -70,7 +63,6 @@ class Matrix:
                     Matrix.result_mat[i].append(self.mat[i][j] + second.mat[i][j])
             self.format_matrix()
 
-
     def mult_matrix_constant(self, num=None, mat=None):
         # if num is None, the function is called seprately.
         # if num is defined, the function is called for inverse_matrix() function
@@ -84,7 +76,6 @@ class Matrix:
                 num = float(num)
         Matrix.result_mat = [[round(num * mat[i][j], 2) for j in range(self.col)] for i in range(self.row)]     
         self.format_matrix()
-
 
     def mult_matrix(self):
         Matrix.result_mat = []
@@ -103,7 +94,6 @@ class Matrix:
                     Matrix.result_mat[i].append(temp)
         
         self.format_matrix()
-
 
     def transpose_matrix(self):
         print("""
@@ -145,7 +135,6 @@ class Matrix:
 
             self.format_matrix()
 
-
     def det_mat(self, mat, total=0):
         indices = list(range(len(mat)))
 
@@ -173,7 +162,6 @@ class Matrix:
 
         return total
 
-
     def inverse_mat(self):
         self.get_matrix('')
         mat = np.array(self.mat)
@@ -189,7 +177,6 @@ class Matrix:
             self.format_matrix()
         except:
             print('This matrix doesn\'t have an inverse.')
-
 
     def format_matrix(self):
         # Printing the matrix formattly 
